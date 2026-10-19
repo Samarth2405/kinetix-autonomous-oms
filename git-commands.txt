@@ -1,0 +1,166 @@
+Kinetix Autonomous OMS — Git command cheat sheet (with explanations)
+Remote: https://github.com/Samarth2405/kinetix-autonomous-oms.git
+
+Quick mental model:
+  - Working folder = files on disk (edited but not necessarily saved in Git yet)
+  - Staging area   = what you mark to include in the next snapshot (commit)
+  - Commit         = saved snapshot in local history
+  - origin         = nickname for GitHub (the remote copy of the repo)
+
+================================================================================
+SETUP (one-time)
+================================================================================
+
+git clone https://github.com/Samarth2405/kinetix-autonomous-oms.git
+  # Download the whole repo from GitHub into a new folder and connect "origin".
+
+cd kinetix-autonomous-oms
+  # Enter the project folder (shell command, not Git — but you need to be here to run git).
+
+git remote -v
+  # List remotes (usually "origin") and their fetch/push URLs. Confirms where push/pull go.
+
+git remote add origin https://github.com/Samarth2405/kinetix-autonomous-oms.git
+  # Link an existing local folder to GitHub. Use when you ran "git init" locally first.
+
+================================================================================
+DAILY WORKFLOW
+================================================================================
+
+git status
+  # Shows current branch, changed/untracked files, and what is staged for commit.
+
+git diff
+  # Line-by-line diff of unstaged changes (working folder vs last commit).
+
+git diff --staged
+  # Diff of staged changes only (what would go into the next commit).
+
+git log --oneline -10
+  # Last 10 commits, one line each (hash + message). Good for recent history.
+
+git add .
+  # Stage all new/changed/deleted files in this folder and subfolders.
+
+git add path/to/file
+  # Stage only one file (or path). Prefer this for focused commits.
+
+git commit -m "Your message"
+  # Save a snapshot locally with a short description of what changed and why.
+
+git push
+  # Upload your branch's new commits to GitHub (uses upstream if already set).
+
+git push -u origin main
+  # First push of branch "main": upload commits AND set "main" to track origin/main
+  # so later you can just type "git push" / "git pull".
+
+================================================================================
+BRANCHES
+================================================================================
+  # A branch is a separate line of work (e.g. main vs feature). Commits stay on the
+  # branch you have checked out.
+
+git branch
+  # List local branches; * marks the branch you are on now.
+
+git branch feature/my-change
+  # Create a new branch pointing at your current commit (does not switch to it).
+
+git switch feature/my-change
+  # Check out that branch — your edits and new commits go there.
+
+git switch -c feature/my-change
+  # Create branch and switch in one step (common for new work).
+
+git switch main
+  # Go back to main (or master) branch.
+
+git merge feature/my-change
+  # While on main (or target branch): bring feature commits into current branch.
+
+git branch -d feature/my-change
+  # Delete local branch after it is merged. -d refuses if not fully merged.
+
+================================================================================
+SYNC WITH GITHUB
+================================================================================
+
+git fetch origin
+  # Download new commits/branches from GitHub without changing your files yet.
+  # Safe to run often; lets you see what others pushed.
+
+git pull
+  # fetch + merge remote changes into your current branch (updates your files).
+
+git pull --rebase origin main
+  # fetch + replay your local commits on top of latest main (linear history).
+  # Use when on a feature branch and you want a cleaner history before push.
+
+git push origin main
+  # Push explicitly to remote "origin", branch "main" (same as push when on main).
+
+================================================================================
+UNDO / FIX MISTAKES
+================================================================================
+
+git restore path/to/file
+  # Throw away unstaged edits in that file; file matches last commit again.
+
+git restore --staged path/to/file
+  # Unstage file (remove from next commit) but keep your edits on disk.
+
+git commit --amend
+  # Replace the last commit (message and/or staged files). Only if NOT pushed yet,
+  # or you understand rewriting shared history.
+
+git reset --soft HEAD~1
+  # Remove the last commit from history but keep all its changes staged.
+  # HEAD~1 means "one commit before now".
+
+================================================================================
+STASH (save work temporarily)
+================================================================================
+  # Use when you must switch branches but are not ready to commit messy WIP.
+
+git stash
+  # Hide uncommitted changes in a stack; working folder becomes clean.
+
+git stash pop
+  # Apply the most recent stash and remove it from the stash list.
+
+git stash list
+  # Show saved stashes (git stash apply N applies without removing).
+
+================================================================================
+INSPECT
+================================================================================
+
+git show HEAD
+  # Show the latest commit: message, author, and full patch of what changed.
+
+git log --oneline --graph --all
+  # Visual-ish history of all branches (useful after fetch).
+
+git diff main..origin/main
+  # Compare local main to GitHub's main (what you have not pulled or have not pushed).
+
+================================================================================
+GITHUB CLI (optional — install "gh" from GitHub)
+================================================================================
+  # Same repo on the web, but from the terminal: PRs, issues, auth.
+
+gh auth login
+  # Sign in to GitHub so gh commands work on your account.
+
+gh repo view
+  # Open repo info in terminal (or browser with --web).
+
+gh pr create
+  # Start a pull request from your current branch after you pushed it.
+
+gh pr list
+  # List open pull requests for this repo.
+
+gh pr checkout 123
+  # Check out PR #123 locally to review or test (123 = PR number).
